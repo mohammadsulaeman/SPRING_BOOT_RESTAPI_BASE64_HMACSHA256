@@ -15,4 +15,5 @@ public interface BiodataService {
     void deleteBiodata(String id);
     String urlImagesPerson(String nim);
     boolean cekToken(String fullName,String token);
+    List<BiodataDto> searchDataByKewords(String keyword);
 }

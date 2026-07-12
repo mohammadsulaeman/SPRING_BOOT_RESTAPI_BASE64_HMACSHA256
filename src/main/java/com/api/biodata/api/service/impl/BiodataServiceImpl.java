@@ -131,6 +131,14 @@ public class BiodataServiceImpl implements BiodataService
         return tokens.equalsIgnoreCase(token);
     }
 
+    @Override
+    public List<BiodataDto> searchDataByKewords(String keyword) {
+
+        return  repository.findBiodataByFullNameIsLike(keyword)
+                .stream()
+                .map(AutoBiodataMapper.MAPPER::mapToBiodataDto).toList();
+    }
+
     private String urlImage(BiodataDto biodataDto) {
 
         String fileName = UUID.randomUUID() + "_" + biodataDto.getNim()+"_"+biodataDto.getFullName()+".jpeg";

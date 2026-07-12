@@ -52,24 +52,28 @@ public class BiodataApiController {
     {
         Map<String,Object> hasil = new HashMap<>();
         HttpStatus statusCode;
+        int statusCodeKey;
         if (biodataService.cekToken(biodataDto.getFullName(), token)){
             BiodataDto saveBiodataDto = biodataService.saveBiodata(biodataDto);
             if (saveBiodataDto.getId() != null){
                 statusCode = HttpStatus.CREATED;
-                hasil.put("statusCode",statusCode.toString());
+                statusCodeKey = statusCode.value();
+                hasil.put("statusCode",statusCodeKey);
                 hasil.put("message","Data Berhasil Tersimpan");
                 hasil.put("status","success");
                 hasil.put("data",saveBiodataDto);
             }else {
                 statusCode = HttpStatus.BAD_REQUEST;
-                hasil.put("statusCode",statusCode.toString());
+                statusCodeKey = statusCode.value();
+                hasil.put("statusCode",statusCodeKey);
                 hasil.put("message","Data tidak Berhasil Di Simpan");
                 hasil.put("status","failed");
                 hasil.put("data",null);
             }
         }else {
             statusCode = HttpStatus.UNAUTHORIZED;
-            hasil.put("statusCode", statusCode.toString());
+            statusCodeKey = statusCode.value();
+            hasil.put("statusCode", statusCodeKey);
             hasil.put("status","Unauthorized");
             hasil.put("message","invalid token");
         }
@@ -82,22 +86,53 @@ public class BiodataApiController {
     {
         Map<String,Object> hasil = new HashMap<>();
         HttpStatus statusCode;
+        int statusCodeKey;
         List<BiodataDto> biodataDtoList = biodataService.fetchAllBiodata();
         if (biodataDtoList.isEmpty()){
-            statusCode = HttpStatus.BAD_REQUEST;
-            hasil.put("statusCode",statusCode);
+            statusCode = HttpStatus.ACCEPTED;
+            statusCodeKey = statusCode.value();
+            hasil.put("statusCode",statusCodeKey);
             hasil.put("message","dataList tidak ditemukan");
             hasil.put("status","failed");
             hasil.put("data",biodataDtoList);
         }else {
             statusCode = HttpStatus.ACCEPTED;
-            hasil.put("statusCode",statusCode);
+            statusCodeKey = statusCode.value();
+            hasil.put("statusCode",statusCodeKey);
             hasil.put("message","datalist ditemukan");
             hasil.put("status","success");
             hasil.put("data",biodataDtoList);
         }
         return new ResponseEntity<>(hasil,statusCode);
     }
+
+
+    @GetMapping("search")
+    public  ResponseEntity<Map<String,Object>> searchDataByKeyword(
+            @RequestParam String keywords
+    ){
+        Map<String,Object> hasil = new HashMap<>();
+        HttpStatus statusCode;
+        int statusCodeKey;
+        List<BiodataDto> biodataDtoList = biodataService.searchDataByKewords(keywords);
+        if (biodataDtoList.isEmpty()){
+            statusCode = HttpStatus.BAD_REQUEST;
+            statusCodeKey = statusCode.value();
+            hasil.put("statusCode",statusCodeKey);
+            hasil.put("message","dataList tidak ditemukan");
+            hasil.put("status","failed");
+            hasil.put("data",biodataDtoList);
+        }else {
+            statusCode = HttpStatus.ACCEPTED;
+            statusCodeKey = statusCode.value();
+            hasil.put("statusCode",statusCodeKey);
+            hasil.put("message","datalist ditemukan");
+            hasil.put("status","success");
+            hasil.put("data",biodataDtoList);
+        }
+        return new ResponseEntity<>(hasil,statusCode);
+    }
+
 
     /**
      * create method list data by id
@@ -111,23 +146,27 @@ public class BiodataApiController {
         BiodataDto biodataDto = biodataService.fetchBiodataById(nim);
         Map<String,Object> hasil = new HashMap<>();
         HttpStatus statusCode;
+        int statusCodeKey;
         if (biodataService.cekToken(biodataDto.getFullName(), token)){
             if (!biodataDto.getFullName().isEmpty()){
                 statusCode = HttpStatus.ACCEPTED;
-                hasil.put("statusCode",statusCode);
+                statusCodeKey = statusCode.value();
+                hasil.put("statusCode",statusCodeKey);
                 hasil.put("message","Berhasil");
                 hasil.put("data",biodataDto);
                 hasil.put("status","success");
             }else {
-                statusCode = HttpStatus.BAD_REQUEST;
-                hasil.put("statusCode",statusCode);
+                statusCode = HttpStatus.ACCEPTED;
+                statusCodeKey = statusCode.value();
+                hasil.put("statusCode",statusCodeKey);
                 hasil.put("status","failed");
                 hasil.put("message","data tidak ditemukan");
                 hasil.put("data",biodataDto);
             }
         }else{
             statusCode = HttpStatus.UNAUTHORIZED;
-            hasil.put("statusCode", statusCode.toString());
+            statusCodeKey = statusCode.value();
+            hasil.put("statusCode", statusCodeKey);
             hasil.put("status","Unauthorized");
             hasil.put("message","Invalid Token");
         }
@@ -147,7 +186,7 @@ public class BiodataApiController {
     {
         Map<String,Object> hasil = new HashMap<>();
         HttpStatus statusCode;
-
+        int statusCodeKey;
 
         if (biodataService.cekToken(biodataDto.getFullName(), token)){
 
@@ -164,21 +203,24 @@ public class BiodataApiController {
                 BiodataDto update = biodataService.updateBiodata(biodataDto);
                 if (!update.getFullName().isEmpty()){
                     statusCode = HttpStatus.CREATED;
-                    hasil.put("statusCode",statusCode.toString());
+                    statusCodeKey = statusCode.value();
+                    hasil.put("statusCode",statusCodeKey);
                     hasil.put("message","Data Berhasil Di Update");
                     hasil.put("status","success");
                     hasil.put("data",update);
                     //hasil.put("data",getData);
                 }else {
-                    statusCode = HttpStatus.BAD_REQUEST;
-                    hasil.put("statusCode",statusCode.toString());
+                    statusCode = HttpStatus.ACCEPTED;
+                    statusCodeKey = statusCode.value();
+                    hasil.put("statusCode",statusCodeKey);
                     hasil.put("message","Data tidak berhasil di update");
                     hasil.put("status","failed");
                     hasil.put("data",update.toString());
                 }
             }else{
-                statusCode = HttpStatus.BAD_REQUEST;
-                hasil.put("statusCode",statusCode.toString());
+                statusCode = HttpStatus.ACCEPTED;
+                statusCodeKey = statusCode.value();
+                hasil.put("statusCode",statusCodeKey);
                 hasil.put("status","failed");
                 hasil.put("message","Foto Lama gagal di hapus");
             }
@@ -187,7 +229,8 @@ public class BiodataApiController {
 
         }else{
             statusCode = HttpStatus.UNAUTHORIZED;
-            hasil.put("statusCode", statusCode.toString());
+            statusCodeKey = statusCode.value();
+            hasil.put("statusCode", statusCodeKey);
             hasil.put("status","Unauthorized");
             hasil.put("message","Invalid Token");
         }
@@ -199,10 +242,10 @@ public class BiodataApiController {
      */
     @DeleteMapping("delete/{nim}")
     @SecurityRequirement(name = "token")
-    public ResponseEntity<Map<String,String>> deleteBiodata(@PathVariable String nim,@RequestHeader String token) throws IOException {
-        Map<String,String> hasil = new HashMap<>();
+    public ResponseEntity<Map<String,Object>> deleteBiodata(@PathVariable String nim,@RequestHeader String token) throws IOException {
+        Map<String,Object> hasil = new HashMap<>();
         HttpStatus statusCode = HttpStatus.FOUND;
-
+        int statusCodeKey = statusCode.value();
         BiodataDto biodataDto1 = biodataService.fetchBiodataById(nim);
         if (biodataService.cekToken(biodataDto1.getFullName(),token)){
             String fotoLama = biodataDto1.getPhoto().replaceAll(urlPathImages,"");
@@ -215,12 +258,14 @@ public class BiodataApiController {
 
                 biodataService.deleteBiodata(biodataDto1.getId());
                 statusCode = HttpStatus.ACCEPTED;
-                hasil.put("statusCode",statusCode.toString());
+                statusCodeKey = statusCode.value();
+                hasil.put("statusCode",statusCodeKey);
                 hasil.put("status","success");
                 hasil.put("message","Delete Data Biodata Berhasil Dilakukan");
             }else{
-                statusCode = HttpStatus.BAD_REQUEST;
-                hasil.put("statusCode",statusCode.toString());
+                statusCode = HttpStatus.ACCEPTED;
+                statusCodeKey = statusCode.value();
+                hasil.put("statusCode",statusCodeKey);
                 hasil.put("status","failed");
                 hasil.put("message","Delete Data Biodata tidak berhasil dilakukan");
             }
@@ -233,9 +278,10 @@ public class BiodataApiController {
      * create method delete file
      */
     @GetMapping("deletGambar/{nim}")
-    public ResponseEntity<Map<String,String>> deleteGambar(@PathVariable String nim) throws IOException {
-        Map<String,String> hasil = new HashMap<>();
+    public ResponseEntity<Map<String,Object>> deleteGambar(@PathVariable String nim) throws IOException {
+        Map<String,Object> hasil = new HashMap<>();
         HttpStatus status;
+        int statusCodeKey;
         BiodataDto biodataDto = biodataService.fetchBiodataById(nim);
         String namaFile = biodataDto.getPhoto();
 
@@ -245,11 +291,13 @@ public class BiodataApiController {
             Path fileName = publicPath.resolve(namaFile);
             Files.delete(fileName);
             status = HttpStatus.ACCEPTED;
-            hasil.put("statusCode",status.toString());
+            statusCodeKey = status.value();
+            hasil.put("statusCode",statusCodeKey);
             hasil.put("message","berhasil hapus gambar");
         }else {
-            status = HttpStatus.BAD_REQUEST;
-            hasil.put("statusCode",status.toString());
+            status = HttpStatus.ACCEPTED;
+            statusCodeKey = status.value();
+            hasil.put("statusCode",statusCodeKey);
             hasil.put("message","gagal hapus gambar");
         }
 
