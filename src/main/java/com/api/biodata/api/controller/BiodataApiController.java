@@ -43,6 +43,22 @@ public class BiodataApiController {
             return "";
     }
 
+    @PostMapping("token")
+    public ResponseEntity<Map<String,String>> token(
+            @RequestParam String fullName
+    ){
+        Map<String,String> model = new HashMap<>();
+        if (fullName.isEmpty()){
+            throw new RuntimeException("FullName is not empty");
+        }
+        String token = biodataService.tokenSecretKey(fullName);
+        if (!token.isEmpty()){
+            model.put("token",token);
+            model.put("message",HttpStatus.CREATED.toString());
+        }
+        return new ResponseEntity<>(model,HttpStatus.CREATED);
+    }
+
     @PostMapping("save")
     @SecurityRequirement(name = "token")
     public ResponseEntity<Map<String,Object>> saveBiodata(
@@ -107,16 +123,16 @@ public class BiodataApiController {
     }
 
 
-    @GetMapping("search")
+    @GetMapping("search/{keywords}")
     public  ResponseEntity<Map<String,Object>> searchDataByKeyword(
-            @RequestParam String keywords
+            @PathVariable String keywords
     ){
         Map<String,Object> hasil = new HashMap<>();
         HttpStatus statusCode;
         int statusCodeKey;
         List<BiodataDto> biodataDtoList = biodataService.searchDataByKewords(keywords);
         if (biodataDtoList.isEmpty()){
-            statusCode = HttpStatus.BAD_REQUEST;
+            statusCode = HttpStatus.ACCEPTED;
             statusCodeKey = statusCode.value();
             hasil.put("statusCode",statusCodeKey);
             hasil.put("message","dataList tidak ditemukan");
@@ -303,4 +319,6 @@ public class BiodataApiController {
 
         return new ResponseEntity<>(hasil,status);
     }
+
+
 }

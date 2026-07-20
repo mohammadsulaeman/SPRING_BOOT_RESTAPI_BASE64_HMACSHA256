@@ -16,4 +16,5 @@ public interface BiodataService {
     String urlImagesPerson(String nim);
     boolean cekToken(String fullName,String token);
     List<BiodataDto> searchDataByKewords(String keyword);
+    String tokenSecretKey(String fullName);
 }

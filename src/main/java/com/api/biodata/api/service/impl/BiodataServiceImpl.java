@@ -134,9 +134,18 @@ public class BiodataServiceImpl implements BiodataService
     @Override
     public List<BiodataDto> searchDataByKewords(String keyword) {
 
-        return  repository.findBiodataByFullNameIsLike(keyword)
-                .stream()
+        return  repository.findAll()
+                .stream().filter(value -> value.getFullName().contains(keyword))
                 .map(AutoBiodataMapper.MAPPER::mapToBiodataDto).toList();
+    }
+
+    @Override
+    public String tokenSecretKey(String fullName) {
+        String secretKey = "BIODATA_2023";
+
+        byte[] hmacsha256 = calcHmacSha256(secretKey.getBytes(StandardCharsets.UTF_8),fullName.getBytes(StandardCharsets.UTF_8));
+
+        return Base64.getEncoder().encodeToString(hmacsha256);
     }
 
     private String urlImage(BiodataDto biodataDto) {

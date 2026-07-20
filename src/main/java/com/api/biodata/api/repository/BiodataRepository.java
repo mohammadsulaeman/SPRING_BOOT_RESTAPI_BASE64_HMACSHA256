@@ -13,5 +13,4 @@ import java.util.Optional;
 public interface BiodataRepository extends JpaRepository<Biodata, String> {
     Optional<Biodata> findByEmail(String email);
     Optional<Biodata> findByNim(String nim);
-    List<Biodata> findBiodataByFullNameIsLike(String name);
 }
